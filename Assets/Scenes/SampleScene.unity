@@ -429,6 +429,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canCollide: 1
   position: {x: 0, y: 0, z: 0}
+  size: {x: 50, y: 1, z: 50}
   tag: Object
   collisionId: 0
 --- !u!4 &577749343
@@ -610,6 +611,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canCollide: 1
   position: {x: 0, y: 0, z: 0}
+  size: {x: 1, y: 1, z: 1}
   tag: Object
   collisionId: 0
 --- !u!114 &1571931719
@@ -688,6 +690,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canCollide: 1
   position: {x: 0, y: 0, z: 0}
+  size: {x: 1, y: 1, z: 1}
   tag: Object
   collisionId: 0
 --- !u!114 &1747145497
