@@ -9,7 +9,8 @@ public class Object3D : MonoBehaviour
     public Vector3 size = Vector3.one;
     public string tag = "Object";
     public int collisionId;
-    
+
+    [SerializeField] private bool uncullable = false;
     private bool instantiated = false;
     
     private void Instantiate()
@@ -40,9 +41,12 @@ public class Object3D : MonoBehaviour
     {
         if (!this.instantiated) return;
         Quaternion rotation = this.transform.rotation;
+        Vector3 intendedSize = this.size;
+        if (!this.uncullable)
+            intendedSize = ObjectCulling.IsCullable(this) ? this.size : Vector3.zero;
 
         this.position = this.transform.position;
-        Matrix4x4 matrix = UpdateMesh(this.position, this.size, rotation);
+        Matrix4x4 matrix = UpdateMesh(this.position, intendedSize, rotation);
         Renderer.instance.matrices[Renderer.instance.colliderIds.IndexOf(this.collisionId)] = matrix;
         
         CollisionManager.Instance.UpdateMatrix(this.collisionId, matrix);
