@@ -25,34 +25,34 @@ public class PlayerCameraFollow : MonoBehaviour
     // This method will be called by EnhancedMeshGenerator to set the player position
     public void SetPlayerPosition(Vector3 position)
     {
-        playerPosition = position;
+        this.playerPosition = position;
     }
     
     void LateUpdate()
     {
-        if (playerPosition == Vector3.zero)
+        if (this.playerPosition == Vector3.zero)
             return;
             
         // Calculate desired position based on player position and offset
-        Vector3 desiredPosition = transform.position;
+        Vector3 desiredPosition = this.transform.position;
         
         // Only follow axes we want to follow
-        if (followX) desiredPosition.x = playerPosition.x + offset.x;
-        if (followY) desiredPosition.y = playerPosition.y + offset.y;
-        if (followZ) desiredPosition.z = playerPosition.z + offset.z;
+        if (this.followX) desiredPosition.x = this.playerPosition.x + this.offset.x;
+        if (this.followY) desiredPosition.y = this.playerPosition.y + this.offset.y;
+        if (this.followZ) desiredPosition.z = this.playerPosition.z + this.offset.z;
         
         // Apply constraints if enabled
-        if (useConstraints)
+        if (this.useConstraints)
         {
-            desiredPosition.x = Mathf.Clamp(desiredPosition.x, xConstraint.x, xConstraint.y);
-            desiredPosition.y = Mathf.Clamp(desiredPosition.y, yConstraint.x, yConstraint.y);
+            desiredPosition.x = Mathf.Clamp(desiredPosition.x, this.xConstraint.x, this.xConstraint.y);
+            desiredPosition.y = Mathf.Clamp(desiredPosition.y, this.yConstraint.x, this.yConstraint.y);
         }
         
         // Smoothly interpolate between current position and desired position
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-        transform.position = smoothedPosition;
+        Vector3 smoothedPosition = Vector3.Lerp(this.transform.position, desiredPosition, this.smoothSpeed);
+        this.transform.position = smoothedPosition;
         
         // Look at player (optional - comment this out if you want fixed camera angle)
-        // transform.LookAt(playerPosition);
+        this.transform.LookAt(this.playerPosition);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,30 +10,28 @@ public class AABBBounds
     public Vector3 Min { get; private set; }
     public Vector3 Max { get; private set; }
     public int ID { get; private set; }
-    public bool IsPlayer { get; private set; }
+    public string tag { get; private set; }
     public Matrix4x4 Matrix { get; set; }
 
-    public AABBBounds(Vector3 center, Vector3 size, int id, bool isPlayer = false)
+    public AABBBounds(Vector3 center, Vector3 size, int id, string tag = "Object")
     {
-        ID = id;
-        IsPlayer = isPlayer;
+        this.ID = id;
+        this.tag = tag;
         UpdateBounds(center, size);
     }
 
     public void UpdateBounds(Vector3 center, Vector3 size)
     {
-        Center = center;
-        Size = size;
-        Extents = size * 0.5f; // Half-size for efficient calculations
-        Min = center - Extents;
-        Max = center + Extents;
+        this.Center = center;
+        this.Size = size;
+        this.Extents = size * 0.5f; // Half-size for efficient calculations
+        this.Min = center - this.Extents;
+        this.Max = center + this.Extents;
     }
 
     public bool Intersects(AABBBounds other)
     {
-        return !(Max.x < other.Min.x || Min.x > other.Max.x ||
-                 Max.y < other.Min.y || Min.y > other.Max.y ||
-                 Max.z < other.Min.z || Min.z > other.Max.z);
+        return !(this.Max.x < other.Min.x || this.Min.x > other.Max.x || this.Max.y < other.Min.y || this.Min.y > other.Max.y || this.Max.z < other.Min.z || this.Min.z > other.Max.z);
     }
 }
 
@@ -56,16 +55,16 @@ public class CollisionManager : MonoBehaviour
     private Dictionary<int, AABBBounds> _colliders = new Dictionary<int, AABBBounds>();
     private int nextID = 0;
 
-    public int RegisterCollider(Vector3 center, Vector3 size, bool isPlayer = false)
+    public int RegisterCollider(Vector3 center, Vector3 size, string tag = "Object")
     {
-        int id = nextID++;
-        _colliders[id] = new AABBBounds(center, size, id, isPlayer);
+        int id = this.nextID++;
+        this._colliders[id] = new AABBBounds(center, size, id, tag);
         return id;
     }
 
     public void UpdateCollider(int id, Vector3 center, Vector3 size)
     {
-        if (_colliders.TryGetValue(id, out AABBBounds bounds))
+        if (this._colliders.TryGetValue(id, out AABBBounds bounds))
         {
             bounds.UpdateBounds(center, size);
         }
@@ -73,15 +72,15 @@ public class CollisionManager : MonoBehaviour
 
     public void RemoveCollider(int id)
     {
-        if (_colliders.ContainsKey(id))
+        if (this._colliders.ContainsKey(id))
         {
-            _colliders.Remove(id);
+            this._colliders.Remove(id);
         }
     }
 
     public void UpdateMatrix(int id, Matrix4x4 matrix)
     {
-        if (_colliders.TryGetValue(id, out AABBBounds bounds))
+        if (this._colliders.TryGetValue(id, out AABBBounds bounds))
         {
             bounds.Matrix = matrix;
         }
@@ -90,14 +89,14 @@ public class CollisionManager : MonoBehaviour
     public bool CheckCollision(int id, Vector3 newCenter, out List<int> collidingIds)
     {
         collidingIds = new List<int>();
-        if (!_colliders.TryGetValue(id, out AABBBounds current))
+        if (!this._colliders.TryGetValue(id, out AABBBounds current))
             return false;
 
         // Create a temporary bounds for collision check
         AABBBounds temp = new AABBBounds(newCenter, current.Size, -1);
 
         bool collided = false;
-        foreach (var kvp in _colliders)
+        foreach (var kvp in this._colliders)
         {
             if (kvp.Key == id) continue; // Skip self-collision
 
@@ -112,10 +111,19 @@ public class CollisionManager : MonoBehaviour
 
     public Matrix4x4 GetMatrix(int id)
     {
-        if (_colliders.TryGetValue(id, out AABBBounds bounds))
+        if (this._colliders.TryGetValue(id, out AABBBounds bounds))
         {
             return bounds.Matrix;
         }
         return Matrix4x4.identity;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        foreach (var kvp in this._colliders)
+        {
+            Gizmos.DrawWireCube(kvp.Value.Center, kvp.Value.Size);
+        }
     }
 }
