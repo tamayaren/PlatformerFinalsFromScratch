@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 // Object3D : uses transform
@@ -12,7 +13,8 @@ public class Object3D : MonoBehaviour
 
     [SerializeField] private bool uncullable = false;
     private bool instantiated = false;
-    
+
+    public bool visible = true;
     private void Instantiate()
     {
         Quaternion rotation = this.transform.rotation;
@@ -20,7 +22,7 @@ public class Object3D : MonoBehaviour
         this.position = this.transform.position;
         this.collisionId = CollisionManager.Instance.RegisterCollider(this.gameObject, this.position + this.size / 2f, this.size, this.canCollide, this.tag);
         
-        Matrix4x4 matrix = UpdateMesh(this.position, size, rotation);
+        Matrix4x4 matrix = UpdateMesh(this.position, this.size, rotation);
         
         Renderer.instance.matrices.Add(matrix);
         Renderer.instance.colliderIds.Add(this.collisionId);
@@ -46,6 +48,7 @@ public class Object3D : MonoBehaviour
         if (!this.uncullable)
             intendedSize = ObjectCulling.IsCullable(this) ? this.size : Vector3.zero;
 
+        if (!this.visible) this.size = Vector3.zero;
         this.position = this.transform.position;
         Matrix4x4 matrix = UpdateMesh(this.position, intendedSize, rotation);
         Renderer.instance.matrices[Renderer.instance.colliderIds.IndexOf(this.collisionId)] = matrix;
@@ -58,5 +61,13 @@ public class Object3D : MonoBehaviour
     public static bool CheckCollisionAt(int id, Vector3 position)
     {
         return CollisionManager.Instance.CheckCollision(id, position, out _, out _);
+    }
+
+    public void OnDestroy()
+    {
+        Matrix4x4 matrix = Renderer.instance.matrices[Renderer.instance.colliderIds.IndexOf(this.collisionId)];
+        this.size = Vector3.zero;
+        
+        CollisionManager.Instance.RemoveCollider(this.collisionId);
     }
 }

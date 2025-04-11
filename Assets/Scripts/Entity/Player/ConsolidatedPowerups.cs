@@ -1,14 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class ConsolidatedPowerups : MonoBehaviour
 {
     public static ConsolidatedPowerups instance;
+
+    [SerializeField] private GameObject fireballPrefab;
     private Humanoid humanoid;
     private Object3D object3D;
+    
+    private ParticleSystem particleSystem;
 
     //
     public bool fireballPowerup = false;
@@ -24,22 +29,37 @@ public class ConsolidatedPowerups : MonoBehaviour
     {
         this.humanoid = GetComponent<Humanoid>();
         this.object3D = GetComponent<Object3D>();
+        this.particleSystem = GetComponent<ParticleSystem>();
     }
 
     private IEnumerator MarioStar()
     {
         this.marioStarPowerup = true;
+        this.particleSystem.Play();
         yield return new WaitForSeconds(this.marioStarDuration);
         this.marioStarPowerup = false;
+        this.particleSystem.Stop();
     }
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && this.fireballPowerup)
+        if (Input.GetKeyDown(KeyCode.F) && this.fireballPowerup)
         {
-            
-            
             this.fireballPowerup = false;
+            GameObject fireball = Instantiate(this.fireballPrefab, this.transform.position, Quaternion.identity) as GameObject;
+
+            GameObject target = GameObject.FindGameObjectsWithTag("Enemy").
+                    OrderBy(x => Vector3.Distance(this.transform.position, x.transform.position)).FirstOrDefault();
+
+            fireball.transform.LookAt(target.transform.position);
+            bool isExist = fireball.TryGetComponent(out FireballProjectile fireballProjectile);
+            if (!isExist)
+            {
+                Destroy(fireball);
+                return;
+            }
+
+            fireballProjectile.StartProjectile();
         }
 
         if (this.marioStarPowerup)
@@ -78,5 +98,21 @@ public class ConsolidatedPowerups : MonoBehaviour
     {
         StartCoroutine(MarioStar());
         this.OnPowerUp.Invoke("Mario Star");
+    }
+
+    public void GetRandomizePowerUp(int random)
+    {
+        switch (random)
+        {
+            case 0:
+                StartFireballPowerup();
+                break;
+            case 1:
+                StartExtraLifePowerup();
+                break;
+            case 2:
+                StartMarioStarPowerup();
+                break;
+        }
     }
 }

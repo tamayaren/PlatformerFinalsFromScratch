@@ -1,14 +1,16 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class EnemySpawn : MonoBehaviour
 {
-    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject objectPrefab;
 
     [SerializeField] private float minInterval = 5f;
     [SerializeField] private float maxInterval = 8f;
 
     [SerializeField] private Vector3 maxPosition;
-    [SerializeField] private float maxEnemies = 6f;
+    [SerializeField] private string tag;
+    [FormerlySerializedAs("maxEnemies")] [SerializeField] private float maxObjects = 6f;
     private float interval = 0f;
     private float elapsed = 0f;
 
@@ -26,7 +28,7 @@ public class EnemySpawn : MonoBehaviour
             this.interval = Random.Range(this.minInterval, this.maxInterval);
             this.elapsed = 0f;
 
-            if (GameObject.FindGameObjectsWithTag("Enemy").Length >= this.maxEnemies) return;
+            if (GameObject.FindGameObjectsWithTag(this.tag).Length >= this.maxObjects) return;
             
             Vector3 randomPosition = new Vector3(
                 Random.Range(-this.maxPosition.x, this.maxPosition.x) * .5f,
@@ -34,7 +36,7 @@ public class EnemySpawn : MonoBehaviour
                 Random.Range(-this.maxPosition.z, this.maxPosition.z) * .5f
             );
             
-            Instantiate(this.enemyPrefab, randomPosition, Quaternion.identity);
+            Instantiate(this.objectPrefab, randomPosition, Quaternion.identity);
         }
     }
 }

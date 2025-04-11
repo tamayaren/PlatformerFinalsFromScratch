@@ -76,12 +76,15 @@ public class PhysicsBody : MonoBehaviour
         }
 
         // Add offset to not falsely check ground
-        if (Object3D.CheckCollisionAt(this.object3D.collisionId,
-                new Vector3(position.x + (intendedVelocity.x * Time.deltaTime), position.y + 0.1f, position.z)))
-            this.velocity.x = 0f;
-        if (Object3D.CheckCollisionAt(this.object3D.collisionId,
-                new Vector3(position.x, position.y + 0.1f, position.z + (intendedVelocity.z * Time.deltaTime))))
-            this.velocity.z = 0f;
+        if (this.object3D.canCollide)
+        {
+            if (Object3D.CheckCollisionAt(this.object3D.collisionId,
+                    new Vector3(position.x + (intendedVelocity.x * Time.deltaTime), position.y + 0.1f, position.z)))
+                this.velocity.x = 0f;
+            if (Object3D.CheckCollisionAt(this.object3D.collisionId,
+                    new Vector3(position.x, position.y + 0.1f, position.z + (intendedVelocity.z * Time.deltaTime))))
+                this.velocity.z = 0f;
+        }
 
         this.transform.position += this.velocity * Time.deltaTime;
     }

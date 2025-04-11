@@ -23,6 +23,13 @@ public class EnemyAI : MonoBehaviour
         this.physicsBody = GetComponent<PhysicsBody>();
         this.object3D = GetComponent<Object3D>();
         this.humanoid = GetComponent<Humanoid>();
+        
+        this.humanoid.OnDied.AddListener(() =>
+        {
+            GameManager.instance.IncrementScore(1) ;
+            this.object3D.visible = false;
+            Destroy(this.gameObject);
+        });
     }
 
     private void Start()
