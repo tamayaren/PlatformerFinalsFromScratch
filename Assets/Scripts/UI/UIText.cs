@@ -7,6 +7,7 @@ public class UIText : MonoBehaviour
     
     [SerializeField] private TextMeshProUGUI healthText;
     [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private TextMeshProUGUI scoreText;
     
     private void UpdateHealthText(float _)
     {
@@ -18,6 +19,12 @@ public class UIText : MonoBehaviour
         this.timerText.text = $"TIMER: {GameManager.instance.timer}";
     }
 
+    private void UpdateScoreText(int _)
+    {
+        this.scoreText.text = $"SCORE: {GameManager.instance.score}";
+    }
+    
+
     private void Start()
     {
         this.playerHumanoid.OnHealthChanged.AddListener(UpdateHealthText);
@@ -27,5 +34,8 @@ public class UIText : MonoBehaviour
         //
         GameManager.instance.OnTimerChanged.AddListener(UpdateTimerText);
         UpdateTimerText(GameManager.instance.timer);
+        
+        GameManager.instance.OnScoreChanged.AddListener(UpdateScoreText);
+        UpdateScoreText(GameManager.instance.score);
     }
 }

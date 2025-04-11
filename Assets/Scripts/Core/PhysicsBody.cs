@@ -88,6 +88,7 @@ public class PhysicsBody : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (this.object3D == null) return;
         Handles.Label(this.transform.position, $"{this.object3D.collisionId} POS");
         Handles.Label(this.transform.position + (this.velocity), $"{this.object3D.collisionId} VELPOS");
         

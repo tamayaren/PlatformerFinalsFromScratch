@@ -3,7 +3,7 @@ using UnityEngine;
 public class HumanoidDefiner : MonoBehaviour
 {
     private Humanoid humanoid;
-    public float startingMaxHealth = 10f;
+    public int startingMaxHealth = 10;
     
     private void Start()
     {

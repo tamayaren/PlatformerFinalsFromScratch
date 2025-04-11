@@ -4,6 +4,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private PlayerCameraFollow cameraFollow;
     private PhysicsBody physicsBody;
+    private Humanoid humanoid;
 
     public float jumpForce = 8f;
     public float moveSpeed = 5f;
@@ -11,10 +12,12 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         this.physicsBody = GetComponent<PhysicsBody>();
+        this.humanoid = GetComponent<Humanoid>();
     }
     
     private void Update()
     {
+        if (this.humanoid.stateType == HumanoidStateType.Dead) return;
         this.cameraFollow.SetPlayerPosition(this.transform.position);
         Transform cam = Camera.main.transform;
         

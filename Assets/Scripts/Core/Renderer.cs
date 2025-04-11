@@ -142,9 +142,11 @@ public class Renderer : MonoBehaviour
             
             // Register with collision system - properly handle rectangular shapes
             int id = CollisionManager.Instance.RegisterCollider(
+                this.gameObject,
                 position, 
                 new Vector3(this.width * scale.x, this.height * scale.y, this.depth * scale.z), 
-                "Player");
+                true,
+                "Object");
             
             // Create transformation matrix
             Matrix4x4 boxMatrix = Matrix4x4.TRS(position, rotation, scale);
@@ -163,7 +165,7 @@ public class Renderer : MonoBehaviour
     
     bool CheckCollisionAt(int id, Vector3 position)
     {
-        return CollisionManager.Instance.CheckCollision(id, position, out _);
+        return CollisionManager.Instance.CheckCollision(id, position, out _, out _);
     }
     
     void RenderBoxes()
@@ -206,8 +208,9 @@ public class Renderer : MonoBehaviour
         
         // Register with collision system - properly handle rectangular shapes
         int id = CollisionManager.Instance.RegisterCollider(
+            this.gameObject,
             position, 
-            new Vector3(this.width * scale.x, this.height * scale.y, this.depth * scale.z));
+            new Vector3(this.width * scale.x, this.height * scale.y, this.depth * scale.z), true);
         
         Matrix4x4 boxMatrix = Matrix4x4.TRS(position, rotation, scale);
         this.matrices.Add(boxMatrix);

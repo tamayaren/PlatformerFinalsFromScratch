@@ -53,12 +53,16 @@ public class CollisionManager : MonoBehaviour
     }
 
     private Dictionary<int, AABBBounds> _colliders = new Dictionary<int, AABBBounds>();
+    private Dictionary<int, bool> _canCollide = new Dictionary<int, bool>();
+    private Dictionary<int, GameObject> _colliderObjects = new Dictionary<int, GameObject>();
     private int nextID = 0;
 
-    public int RegisterCollider(Vector3 center, Vector3 size, string tag = "Object")
+    public int RegisterCollider(GameObject referringTo, Vector3 center, Vector3 size, bool canCollide, string tag = "Object")
     {
         int id = this.nextID++;
         this._colliders[id] = new AABBBounds(center, size, id, tag);
+        this._canCollide[id] = canCollide;
+        this._colliderObjects[id] = referringTo;
         return id;
     }
 
@@ -75,6 +79,8 @@ public class CollisionManager : MonoBehaviour
         if (this._colliders.ContainsKey(id))
         {
             this._colliders.Remove(id);
+            this._canCollide.Remove(id);
+            this._colliderObjects.Remove(id);
         }
     }
 
@@ -86,9 +92,11 @@ public class CollisionManager : MonoBehaviour
         }
     }
 
-    public bool CheckCollision(int id, Vector3 newCenter, out List<int> collidingIds)
+    public bool CheckCollision(int id, Vector3 newCenter, out List<int> collidingIds, out List<GameObject> colliderObject)
     {
         collidingIds = new List<int>();
+        colliderObject = new List<GameObject>();
+        
         if (!this._colliders.TryGetValue(id, out AABBBounds current))
             return false;
 
@@ -97,15 +105,19 @@ public class CollisionManager : MonoBehaviour
 
         bool collided = false;
         foreach (var kvp in this._colliders)
-        {
+        { 
             if (kvp.Key == id) continue; // Skip self-collision
-
+           this._canCollide.TryGetValue(kvp.Key, out bool canCollide);
+           if (!canCollide) continue;
+           
             if (temp.Intersects(kvp.Value))
             {
                 collidingIds.Add(kvp.Key);
+                colliderObject.Add(this._colliderObjects[kvp.Key]);
                 collided = true;
             }
         }
+        
         return collided;
     }
 
@@ -116,6 +128,13 @@ public class CollisionManager : MonoBehaviour
             return bounds.Matrix;
         }
         return Matrix4x4.identity;
+    }
+
+    public void SetCollide(int id, bool collision)
+    {
+        if (!this._colliders.TryGetValue(id, out AABBBounds _)) return;
+        
+        this._canCollide[id] = collision;
     }
 
     private void OnDrawGizmos()

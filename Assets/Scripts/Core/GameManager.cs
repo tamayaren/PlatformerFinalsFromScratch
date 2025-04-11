@@ -7,13 +7,20 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public int timer = 600;
 
-    private void Start() => instance = this;
+    private void Awake() => instance = this;
 
     public UnityEvent<int> OnTimerChanged;
     public UnityEvent OnTimerEnded;
 
     public bool timerEnded = false;
     private float elapsed = 0f;
+
+    public int score = 0;
+    public UnityEvent<int> OnScoreChanged;
+    public int maxScore = 10;
+    
+    public UnityEvent GameWin;
+    
     private void Update()
     {
         if (this.timerEnded) return;
@@ -33,5 +40,14 @@ public class GameManager : MonoBehaviour
             this.timer -= 1;
             this.OnTimerChanged.Invoke(this.timer);
         }
+    }
+
+    public void IncrementScore(int add)
+    {
+        this.score += add;
+        if (this.score >= this.maxScore)
+            this.GameWin.Invoke();
+        
+        this.OnScoreChanged.Invoke(this.score);
     }
 }

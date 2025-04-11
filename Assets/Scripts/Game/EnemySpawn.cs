@@ -30,7 +30,7 @@ public class EnemySpawn : MonoBehaviour
             
             Vector3 randomPosition = new Vector3(
                 Random.Range(-this.maxPosition.x, this.maxPosition.x) * .5f,
-                this.transform.position.y,
+                this.maxPosition.y,
                 Random.Range(-this.maxPosition.z, this.maxPosition.z) * .5f
             );
             
